@@ -1038,7 +1038,7 @@ uint32_t dfu_transport_update_start(void)
     m_tear_down_in_progress = false;
     m_pkt_type              = PKT_TYPE_INVALID;
 
-    leds_init();
+    //leds_init();
 
     err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
     if (err_code != NRF_SUCCESS)
@@ -1059,19 +1059,19 @@ uint32_t dfu_transport_update_start(void)
     {
         m_ble_peer_data_valid = true;
     }
-    else
-    {
-        ble_gap_addr_t addr;
+    // else
+    // {
+    //     ble_gap_addr_t addr;
 
-        err_code = sd_ble_gap_address_get(&addr);
-        APP_ERROR_CHECK(err_code);
+    //     err_code = sd_ble_gap_address_get(&addr);
+    //     APP_ERROR_CHECK(err_code);
 
-        // Increase the BLE address by one when advertising openly.
-        addr.addr[0] += 1;
+    //     // Increase the BLE address by one when advertising openly.
+    //     addr.addr[0] += 1;
 
-        err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &addr);
-        APP_ERROR_CHECK(err_code);
-    }
+    //     err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &addr);
+    //     APP_ERROR_CHECK(err_code);
+    // }
 
     gap_params_init();
     services_init();
