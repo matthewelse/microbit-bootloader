@@ -43,7 +43,7 @@ SECTIONS
   } > UICR_BOOTLOADER
 
   /* No init RAM section in bootloader. Used for bond information exchange. */
-  .noinit :
+  .noinit (NOLOAD) :
   {
 
   } > NOINIT
