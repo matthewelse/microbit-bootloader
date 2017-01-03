@@ -193,7 +193,7 @@ int main(void)
         NRF_POWER->GPREGRET = 0;
     }
     
-    leds_init();
+    // leds_init();
 
     // This check ensures that the defined fields in the bootloader corresponds with actual
     // setting in the nRF51 chip.
@@ -202,13 +202,13 @@ int main(void)
 
     // Initialize.
     timers_init();
-    buttons_init();
+    // buttons_init();
 
     (void)bootloader_init();
 
     if (bootloader_dfu_sd_in_progress())
     {
-        nrf_gpio_pin_clear(UPDATE_IN_PROGRESS_LED);
+        //nrf_gpio_pin_clear(UPDATE_IN_PROGRESS_LED);
 
         err_code = bootloader_dfu_sd_update_continue();
         APP_ERROR_CHECK(err_code);
@@ -219,7 +219,7 @@ int main(void)
         err_code = bootloader_dfu_sd_update_finalize();
         APP_ERROR_CHECK(err_code);
 
-        nrf_gpio_pin_set(UPDATE_IN_PROGRESS_LED);
+        //nrf_gpio_pin_set(UPDATE_IN_PROGRESS_LED);
     }
     else
     {
@@ -229,17 +229,17 @@ int main(void)
     }
 
     dfu_start  = app_reset;
-    dfu_start |= ((nrf_gpio_pin_read(BOOTLOADER_BUTTON) == 0) ? true: false);
+    //dfu_start |= ((nrf_gpio_pin_read(BOOTLOADER_BUTTON) == 0) ? true: false);
     
     if (dfu_start || (!bootloader_app_is_valid(DFU_BANK_0_REGION_START)))
     {
-        nrf_gpio_pin_clear(UPDATE_IN_PROGRESS_LED);
+        //nrf_gpio_pin_clear(UPDATE_IN_PROGRESS_LED);
 
         // Initiate an update of the firmware.
         err_code = bootloader_dfu_start();
         APP_ERROR_CHECK(err_code);
 
-        nrf_gpio_pin_set(UPDATE_IN_PROGRESS_LED);
+        //nrf_gpio_pin_set(UPDATE_IN_PROGRESS_LED);
     }
 
     if (bootloader_app_is_valid(DFU_BANK_0_REGION_START) && !bootloader_dfu_sd_in_progress())
