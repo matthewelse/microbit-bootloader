@@ -54,7 +54,6 @@ void mb_display_init() {
 
     nrf_drv_timer_extended_compare(
          &timer_display, NRF_TIMER_CC_CHANNEL0, ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
-    // nrf_drv_timer_enable(&timer_display);
 }
 
 int mb_display_get_pixel(uint8_t col, uint8_t row) {
@@ -75,6 +74,10 @@ void mb_display_set_image(uint32_t bmp) {
     }
 
     bitmap = bmp;
+
+    if (bitmap == 0) {
+        nrf_drv_timer_disable(&timer_display);
+    }
 }
 
 static inline void mb_display_show_pixel(uint8_t col, uint8_t row) {
@@ -87,16 +90,14 @@ static inline void mb_display_show_pixel(uint8_t col, uint8_t row) {
 
 static inline void mb_display_clr_pixel(uint8_t col, uint8_t row) {
     bitmap &= ~(1 << ((5 * row) + col));
+
+    if (bitmap == 0) {
+        nrf_drv_timer_disable(&timer_display);
+    }
 }
 
 static void mb_display_tick_cb(nrf_timer_event_t event_type, void* p_context) {
     if (event_type == NRF_TIMER_EVENT_COMPARE0) {
-        if (bitmap == 0) {
-            // save energy if we have nothing to render
-            nrf_drv_timer_disable(&timer_display);
-            return;
-        }
-
         if ((row == 1 && col == 6) || col == 9) {
             // next row
             nrf_gpio_cfg_input(ROW(row), NRF_GPIO_PIN_NOPULL);
