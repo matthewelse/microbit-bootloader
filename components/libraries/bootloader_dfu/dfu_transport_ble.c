@@ -457,6 +457,8 @@ static void app_data_process(ble_dfu_t * p_dfu, ble_dfu_evt_t * p_evt)
     }
     else if (err_code == NRF_ERROR_INVALID_LENGTH)
     {
+        // TODO: show a progress indicator on the micro:bit display
+
         // Firmware data packet was handled successfully. And more firmware data is expected.
         m_num_of_firmware_bytes_rcvd += p_evt->evt.ble_dfu_pkt_write.len;
 

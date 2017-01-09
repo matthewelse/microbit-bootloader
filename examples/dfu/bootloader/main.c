@@ -49,6 +49,7 @@
 #include "softdevice_handler_appsh.h"
 #include "pstorage_platform.h"
 #include "nrf_mbr.h"
+#include "microbit_display.h"
 
 #if BUTTONS_NUMBER < 1
 #error "Not enough buttons on board"
@@ -86,15 +87,6 @@
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 {
     app_error_handler(0xDEADBEEF, line_num, p_file_name);
-}
-
-
-/**@brief Function for initialization of LEDs.
- */
-static void leds_init(void)
-{
-    nrf_gpio_cfg_output(UPDATE_IN_PROGRESS_LED);
-    nrf_gpio_pin_set(UPDATE_IN_PROGRESS_LED);
 }
 
 
@@ -192,8 +184,6 @@ int main(void)
     {
         NRF_POWER->GPREGRET = 0;
     }
-    
-    // leds_init();
 
     // This check ensures that the defined fields in the bootloader corresponds with actual
     // setting in the nRF51 chip.
@@ -203,6 +193,8 @@ int main(void)
     // Initialize.
     timers_init();
     // buttons_init();
+
+    mb_display_init();
 
     (void)bootloader_init();
 

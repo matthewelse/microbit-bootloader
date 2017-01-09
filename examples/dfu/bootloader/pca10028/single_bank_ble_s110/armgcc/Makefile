@@ -52,8 +52,11 @@ C_SOURCE_FILES += \
 ../../../../../../components/libraries/util/nrf_assert.c \
 ../../../../../../components/drivers_nrf/hal/nrf_delay.c \
 ../../../../../../components/drivers_nrf/pstorage/pstorage_raw.c \
+../../../../../../components/drivers_nrf/timer/nrf_drv_timer.c \
+../../../../../../components/drivers_nrf/common/nrf_drv_common.c \
 ../../../dfu_ble_svc.c \
 ../../../main.c \
+../../../microbit_display.c \
 ../../../../../../components/ble/common/ble_advdata.c \
 ../../../../../../components/ble/common/ble_conn_params.c \
 ../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.c \
@@ -76,6 +79,8 @@ INC_PATHS += -I../../../../../../components/libraries/scheduler
 INC_PATHS += -I../../../../../../components/softdevice/s110/headers
 INC_PATHS += -I../../../../../bsp
 INC_PATHS += -I../../../../../../components/drivers_nrf/pstorage
+INC_PATHS += -I../../../../../../components/drivers_nrf/timer
+INC_PATHS += -I../../../../../../components/drivers_nrf/common
 INC_PATHS += -I../../../../../../components/toolchain/gcc
 INC_PATHS += -I../../../../../../components/libraries/bootloader_dfu/ble_transport
 INC_PATHS += -I../../../../../../components/device
