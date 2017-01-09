@@ -43,15 +43,7 @@
 #include "dfu_init.h"
 #include <stdint.h>
 #include <string.h>
-#include <dfu_types.h>
 #include "nrf_error.h"
-#include "crc16.h"
-
-#define DFU_INIT_PACKET_EXT_LENGTH_MIN      2                       //< Minimum length of the extended init packet. The extended init packet may contain a CRC, a HASH, or other data. This value must be changed according to the requirements of the system. The template uses a minimum value of two in order to hold a CRC. */
-#define DFU_INIT_PACKET_EXT_LENGTH_MAX      10                      //< Maximum length of the extended init packet. The extended init packet may contain a CRC, a HASH, or other data. This value must be changed according to the requirements of the system. The template uses a maximum value of 10 in order to hold a CRC and any padded data on transport layer without overflow. */
-
-static uint8_t m_extended_packet[DFU_INIT_PACKET_EXT_LENGTH_MAX];   //< Data array for storage of the extended data received. The extended data follows the normal init data of type \ref dfu_init_packet_t. Extended data can be used for a CRC, hash, signature, or other data. */
-static uint8_t m_extended_packet_length;                            //< Length of the extended data received with init packet. */
 
 
 uint32_t dfu_init_prevalidate(uint8_t * p_init_data, uint32_t init_data_len)
