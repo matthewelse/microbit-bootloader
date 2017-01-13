@@ -2,6 +2,7 @@
 #include "nrf_drv_timer.h"
 
 void mb_display_init();
+void mb_display_deinit();
 void mb_display_set_image(uint32_t);
 int mb_display_get_pixel(uint8_t col, uint8_t row);
 void mb_display_set_pixel(uint8_t col, uint8_t row, uint8_t val);

@@ -56,6 +56,13 @@ void mb_display_init() {
          &timer_display, NRF_TIMER_CC_CHANNEL0, ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
 }
 
+void mb_display_deinit() {
+    // this needs to be called before we branch to the application, since
+    // the application might want to use the timer too :p
+
+    nrf_drv_timer_uninit(&timer_display);
+}
+
 int mb_display_get_pixel(uint8_t col, uint8_t row) {
     return (bitmap >> ((5 * row) + col)) & 1;
 }

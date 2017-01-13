@@ -238,6 +238,7 @@ int main(void)
     {
         // Select a bank region to use as application region.
         // @note: Only applications running from DFU_BANK_0_REGION_START is supported.
+        mb_display_deinit();
         bootloader_app_start(DFU_BANK_0_REGION_START);
     }
     
