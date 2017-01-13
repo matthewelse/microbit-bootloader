@@ -16,7 +16,7 @@ This will then produce a hex file in `armgcc/_build`, which you can then run thr
 The `srec_cat` command is only necessary if you're producing a combined binary containing an application, since it sets the bootloader settings to indicate that an application is present.
 
 ```bash
-srec_cat _build/nrf51422_xxac.hex -intel
+srec_cat _build/nrf51422_xxac.hex -intel \
     -exclude 0x3FC00 0x3FC20 \
     -generate 0x3FC00 0x3FC04 -constant-l-e 0x01 4 \
     -generate 0x3FC04 0x3FC08 -constant-l-e 0x00 4 \
