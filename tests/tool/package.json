@@ -1,0 +1,14 @@
+{
+  "name": "microbit-dfu-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Else <matthewelse1997@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "web-bluetooth-dfu": "^0.1.0"
+  }
+}
