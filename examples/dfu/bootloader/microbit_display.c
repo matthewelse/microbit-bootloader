@@ -75,6 +75,22 @@ void mb_display_set_pixel(uint8_t col, uint8_t row, uint8_t val) {
     }
 }
 
+void mb_display_set_nth_pixel(uint8_t n) {
+    if (bitmap == 0) {
+        nrf_drv_timer_enable(&timer_display);
+    }
+
+    bitmap |= 1 << n;
+}
+
+void mb_display_clr_nth_pixel(uint8_t n) {
+    bitmap &= ~(1 << n);
+
+    if (bitmap == 0) {
+        nrf_drv_timer_disable(&timer_display);
+    }
+}
+
 void mb_display_set_image(uint32_t bmp) {
     if (bitmap == 0) {
         nrf_drv_timer_enable(&timer_display);

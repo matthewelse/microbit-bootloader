@@ -14,6 +14,7 @@
 #include <string.h>
 #include "nrf_error.h"
 #include "crc16.h"
+#include "microbit_display.h"
 
 #if defined ( __CC_ARM )
 static dfu_ble_peer_data_t m_peer_data __attribute__((section("NoInit"), zero_init));            /**< This variable should be placed in a non initialized RAM section in order to be valid upon soft reset from application into bootloader. */

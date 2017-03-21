@@ -37,11 +37,15 @@
 #include "dfu_ble_svc_internal.h"
 #include "nrf_delay.h"
 
+#include "microbit_display.h"
+
 #define DFU_REV_MAJOR                        0x00                                                    /** DFU Major revision number to be exposed. */
 #define DFU_REV_MINOR                        0x04                                                    /** DFU Minor revision number to be exposed. */
 #define DFU_REVISION                         ((DFU_REV_MAJOR << 8) | DFU_REV_MINOR)                  /** DFU Revision number to be exposed. Combined of major and minor versions. */
-#define ADVERTISING_LED_PIN_NO               BSP_LED_0                                               /**< Is on when device is advertising. */
-#define CONNECTED_LED_PIN_NO                 BSP_LED_1                                               /**< Is on when device has connected. */
+#define ADVERTISING_LED_PIXEL_NUMBER         0                                                       /**< Is on when device is advertising. */
+#define CONNECTED_LED_PIXEL_NUMBER           1                                                       /**< Is on when device has connected. */
+#define TIMEOUT_GAP_LED_PIXEL_NUMBER         2                                                       /**< Is on when a GAP timeout occurs */
+#define TIMEOUT_GATT_LED_PIXEL_NUMBER         3                                                       /**< Is on when a GATT timeout occurs */
 #define DFU_SERVICE_HANDLE                   0x000C                                                  /**< Handle of DFU service when DFU service is first service initialized. */
 #define BLE_HANDLE_MAX                       0xFFFF                                                  /**< Max handle value is BLE. */
 
@@ -112,6 +116,7 @@ static bool                 m_ble_peer_data_valid    = false;                   
 static uint32_t             m_direct_adv_cnt         = APP_DIRECTED_ADV_TIMEOUT;                     /**< Counter of direct advertisements. */
 static uint8_t            * mp_final_packet;                                                         /**< Pointer to final data packet received. When callback for succesful packet handling is received from dfu bank handling a transfer complete response can be sent to peer. */
 
+static uint8_t mb_packet_notif_count = 0;
 
 /**@brief     Function updating Service Changed CCCD and indicate a service change to peer.
  *
@@ -457,8 +462,6 @@ static void app_data_process(ble_dfu_t * p_dfu, ble_dfu_evt_t * p_evt)
     }
     else if (err_code == NRF_ERROR_INVALID_LENGTH)
     {
-        // TODO: show a progress indicator on the micro:bit display
-
         // Firmware data packet was handled successfully. And more firmware data is expected.
         m_num_of_firmware_bytes_rcvd += p_evt->evt.ble_dfu_pkt_write.len;
 
@@ -471,6 +474,13 @@ static void app_data_process(ble_dfu_t * p_dfu, ble_dfu_evt_t * p_evt)
 
             if (m_pkt_notif_target_cnt == 0)
             {
+                mb_packet_notif_count++;
+                mb_display_set_nth_pixel(mb_packet_notif_count + 4);
+
+                if (mb_packet_notif_count >= 20) {
+                    mb_packet_notif_count = 0;
+                }
+
                 err_code = ble_dfu_pkts_rcpt_notify(p_dfu, m_num_of_firmware_bytes_rcvd);
                 APP_ERROR_CHECK(err_code);
 
@@ -740,7 +750,8 @@ static void advertising_start(void)
         err_code = sd_ble_gap_adv_start(&m_adv_params);
         APP_ERROR_CHECK(err_code);
 
-        nrf_gpio_pin_clear(ADVERTISING_LED_PIN_NO);
+        // nrf_gpio_pin_clear(ADVERTISING_LED_PIN_NO);
+        mb_display_set_nth_pixel(ADVERTISING_LED_PIXEL_NUMBER);
 
         m_is_advertising = true;
     }
@@ -758,7 +769,8 @@ static void advertising_stop(void)
         err_code = sd_ble_gap_adv_stop();
         APP_ERROR_CHECK(err_code);
 
-        nrf_gpio_pin_set(ADVERTISING_LED_PIN_NO);
+        // nrf_gpio_pin_set(ADVERTISING_LED_PIN_NO);
+        mb_display_clr_nth_pixel(ADVERTISING_LED_PIXEL_NUMBER);
 
         m_is_advertising = false;
     }
@@ -777,8 +789,9 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            nrf_gpio_pin_clear(CONNECTED_LED_PIN_NO);
-            nrf_gpio_pin_set(ADVERTISING_LED_PIN_NO);
+            // micro:bit show connected LED
+            mb_display_set_nth_pixel(CONNECTED_LED_PIXEL_NUMBER); // CONNECTED
+            mb_display_clr_nth_pixel(ADVERTISING_LED_PIXEL_NUMBER); // ADVERTISING
 
             m_conn_handle    = p_ble_evt->evt.gap_evt.conn_handle;
             m_is_advertising = false;
@@ -790,7 +803,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
                 uint16_t sys_attr_len = 128;
             
                 m_direct_adv_cnt = APP_DIRECTED_ADV_TIMEOUT;
-                nrf_gpio_pin_set(CONNECTED_LED_PIN_NO);
+
+                mb_display_clr_nth_pixel(CONNECTED_LED_PIXEL_NUMBER); // CONNECTED
         
                 err_code = sd_ble_gatts_sys_attr_get(m_conn_handle, 
                                                      sys_attr, 
@@ -836,6 +850,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         case BLE_GATTS_EVT_TIMEOUT:
             if (p_ble_evt->evt.gatts_evt.params.timeout.src == BLE_GATT_TIMEOUT_SRC_PROTOCOL)
             {
+                mb_display_set_nth_pixel(TIMEOUT_GAP_LED_PIXEL_NUMBER);
                 err_code = sd_ble_gap_disconnect(m_conn_handle,
                                                  BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
                 APP_ERROR_CHECK(err_code);
@@ -845,6 +860,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         case BLE_GAP_EVT_TIMEOUT:
             if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
+                mb_display_set_nth_pixel(TIMEOUT_GATT_LED_PIXEL_NUMBER);
                 m_is_advertising = false;
                 m_direct_adv_cnt--;
                 if (m_direct_adv_cnt == 0)
@@ -944,19 +960,6 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
 }
 
 
-/**@brief       Function for the LEDs initialization.
- *
- * @details     Initializes all LEDs used by this application.
- */
-static void leds_init(void)
-{
-    nrf_gpio_cfg_output(ADVERTISING_LED_PIN_NO);
-    nrf_gpio_cfg_output(CONNECTED_LED_PIN_NO);
-    nrf_gpio_pin_set(ADVERTISING_LED_PIN_NO);
-    nrf_gpio_pin_set(CONNECTED_LED_PIN_NO);
-}
-
-
 /**@brief     Function for the GAP initialization.
  *
  * @details   This function will setup all the necessary GAP (Generic Access Profile) parameters of
@@ -1039,8 +1042,6 @@ uint32_t dfu_transport_update_start(void)
 
     m_tear_down_in_progress = false;
     m_pkt_type              = PKT_TYPE_INVALID;
-
-    //leds_init();
 
     err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
     if (err_code != NRF_SUCCESS)

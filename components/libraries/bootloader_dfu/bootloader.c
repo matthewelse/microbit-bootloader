@@ -26,6 +26,8 @@
 #include "app_scheduler.h"
 #include "nrf_delay.h"
 
+#include "microbit_display.h"
+
 #define IRQ_ENABLED             0x01                    /**< Field identifying if an interrupt is enabled. */
 #define MAX_NUMBER_INTERRUPTS   32                      /**< Maximum number of interrupts available. */
 

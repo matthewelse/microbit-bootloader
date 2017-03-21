@@ -90,6 +90,7 @@ INC_PATHS += -I../../../../../../components/libraries/crc16
 INC_PATHS += -I../../../../../../components/ble/ble_services/ble_dfu
 INC_PATHS += -I../../../../../../components/drivers_nrf/hal
 INC_PATHS += -I../../../../../../components/ble/common
+INC_PATHS += -I../../../
 
 OBJECT_DIRECTORY = _build
 LISTING_DIRECTORY = $(OBJECT_DIRECTORY)
