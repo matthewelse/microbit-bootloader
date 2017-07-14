@@ -1,4 +1,5 @@
 /* Copyright (c) 2017 Matthew Else.
+ * Licensed under the MIT License.
  * 
  * C driver for the micro:bit 5x5 display. The aim of this implementation is to
  * be reasonably compact, since the flash space on the NRF51 is limited. For the
