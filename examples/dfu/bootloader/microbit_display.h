@@ -1,3 +1,5 @@
+/* Copyright (c) 2017 Matthew Else.
+ * Licensed under the MIT License. */
 #include "stdint.h"
 #include "nrf_drv_timer.h"
 
